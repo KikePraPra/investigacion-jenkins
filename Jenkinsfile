@@ -4,7 +4,7 @@ pipeline {
     environment {
         IMAGE_NAME = "grocy-app-image"
         CONTAINER_NAME = "grocy-app"
-        HOST_PORT = "8080"  // Puerto en tu EC2, puede ser cualquiera
+        HOST_PORT = "8081"  // Puerto en tu EC2, puede ser cualquiera
         CONTAINER_PORT = "80"  // Puerto dentro del contenedor, Nginx default
     }
 
