@@ -1,32 +1,6 @@
 pipeline {
     agent any
 
-    stages {
-        stage('Deploy con Docker Compose') {
-            steps {
-                script {
-                    dir("${env.WORKSPACE}") {
-                        sh 'docker compose down --v || true'
-                        sh 'docker compose up -d --build --remove-orphans'
-                    }
-                }
-            }
-        }
-    }
-
-    post {
-        success {
-            echo '✅ ¡Aplicación desplegada exitosamente!'
-        }
-        failure {
-            echo '❌ Hubo un error durante el deploy.'
-        }
-    }
-}
-
-pipeline {
-    agent any
-
     environment {
         IMAGE_NAME = "container-v1"
         CONTAINER_NAME = "grocy-app"
