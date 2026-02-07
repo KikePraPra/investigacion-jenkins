@@ -1,4 +1,34 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;300;400;500;600&display=swap');
+/* Poppins local */
+@font-face {
+    font-family: 'Poppins';
+    font-weight: 300;
+    font-style: normal;
+    src: url('../webfonts/Poppins-Light.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Poppins';
+    font-weight: 400;
+    font-style: normal;
+    src: url('../webfonts/Poppins-Regular.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Poppins';
+    font-weight: 500;
+    font-style: normal;
+    src: url('../webfonts/Poppins-Medium.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Poppins';
+    font-weight: 600;
+    font-style: normal;
+    src: url('../webfonts/Poppins-SemiBold.woff2') format('woff2');
+}
+
+/* Aplicar Poppins */
+
 
 :root{
     --orange:#ff7800;
