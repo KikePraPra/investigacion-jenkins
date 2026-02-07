@@ -1,36 +1,39 @@
 pipeline {
     agent any
-    environment {
-        // Usamos el número de build para que la imagen sea única cada vez
-        IMAGE_TAG = "grocy-app:${BUILD_NUMBER}"
-        CONTAINER_NAME = "grocy-app"
-        EC2_WORKSPACE = "/var/lib/docker/volumes/jenkins_home/_data/workspace/prueba2"
-    }
+    
     stages {
-        stage('Clean & Checkout') {
+        stage('Limpieza y Código') {
             steps {
                 cleanWs()
                 checkout scm
+                // Verificamos qué versión de código bajó Jenkins
+                sh "cat index.html"
             }
         }
-        stage('Build') {
+        
+        stage('Construir Imagen') {
+            steps {
+                // Usamos un nombre único con el número de build
+                // Si el archivo se llama 'dockerfile' (minúscula), cámbialo aquí abajo:
+                sh "docker build --no-cache -t app-nueva:${BUILD_NUMBER} -f dockerfile ."
+            }
+        }
+        
+        stage('Desplegar') {
             steps {
                 script {
-                    // Imprimimos el index para estar 100% seguros en el log
-                    sh "cat index.html"
-                    // Construimos con el tag único
-                    sh "docker build --no-cache -t ${IMAGE_TAG} -f ${EC2_WORKSPACE}/Dockerfile ${EC2_WORKSPACE}"
+                    // Borramos el viejo por nombre
+                    sh "docker rm -f grocy-app || true"
+                    // Corremos la imagen recién creada
+                    sh "docker run -d --name grocy-app -p 8081:80 app-nueva:${BUILD_NUMBER}"
                 }
             }
         }
-        stage('Deploy') {
+        
+        stage('Verificar') {
             steps {
-                script {
-                    // Matamos el anterior
-                    sh "docker rm -f ${CONTAINER_NAME} || true"
-                    // Corremos la imagen recién creada con su tag único
-                    sh "docker run -d --name ${CONTAINER_NAME} -p 8081:80 ${IMAGE_TAG}"
-                }
+                // Esto nos dirá en el log de Jenkins si el contenedor quedó vivo
+                sh "docker ps | grep grocy-app"
             }
         }
     }
