@@ -1,5 +1,5 @@
 /* Poppins local */
-@font-face {
+/* @font-face {
     font-family: 'Poppins';
     font-weight: 300;
     font-style: normal;
@@ -25,7 +25,7 @@
     font-weight: 600;
     font-style: normal;
     src: url('../webfonts/Poppins-SemiBold.woff2') format('woff2');
-}
+} */
 
 /* Aplicar Poppins */
 
@@ -41,7 +41,7 @@
 }
 
 *{
-    font-family: 'Poppins', sans-serif;
+    font-family: sans-serif;
     margin:0; padding:0;
     box-sizing: border-box;
     outline: none; border:none;
