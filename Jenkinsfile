@@ -2,50 +2,49 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "grocy-app-image"
+        IMAGE_NAME = "grocy-app-image:latest"
         CONTAINER_NAME = "grocy-app"
-        HOST_PORT = "8081"  // Puerto en tu EC2, puede ser cualquiera
-        CONTAINER_PORT = "80"  // Puerto dentro del contenedor, Nginx default
+        HOST_PORT = "8081"
+        CONTAINER_PORT = "80"
     }
 
     stages {
+
         stage('Checkout') {
             steps {
-                git 'https://github.com/KikePraPra/investigacion-jenkins.git'
+                checkout scm
+                sh 'git log -1 --oneline'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                script {
-                // Validamos que estamos en el directorio correcto
-                sh "ls -la" 
-                // Construimos la imagen
-                sh "docker build -t ${IMAGE_NAME} ."
-            }
+                sh """
+                docker build -t ${IMAGE_NAME} .
+                """
             }
         }
 
-        stage('Deploy') {
+        stage('Deploy Container') {
             steps {
-                script {
-                    // Detener y eliminar contenedor previo si existe
-                    sh "docker rm -f ${CONTAINER_NAME} || true"
-
-                    // Levantar contenedor mapeando puerto de host al contenedor
-                    sh "docker run -d --name ${CONTAINER_NAME} -p ${HOST_PORT}:${CONTAINER_PORT} --restart unless-stopped ${IMAGE_NAME}"
-                }
+                sh """
+                docker stop ${CONTAINER_NAME} || true
+                docker rm ${CONTAINER_NAME} || true
+                docker run -d \
+                  -p ${HOST_PORT}:${CONTAINER_PORT} \
+                  --name ${CONTAINER_NAME} \
+                  ${IMAGE_NAME}
+                """
             }
         }
     }
 
     post {
         success {
-            echo "✅ ¡Aplicación desplegada exitosamente! Accede en http://<IP_de_tu_EC2>:${HOST_PORT}"
+            echo "✅ Deploy exitoso en http://13.218.25.210:8081"
         }
         failure {
-            sh "docker logs ${CONTAINER_NAME} || true"
-            echo "❌ Hubo un error durante el deploy."
+            echo "❌ Falló el pipeline"
         }
     }
 }
