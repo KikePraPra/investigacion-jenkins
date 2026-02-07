@@ -18,7 +18,7 @@ pipeline {
             steps {
                 script {
                     // El punto final es vital, indica el contexto actual
-                    // sh "docker build --no-cache -t ${IMAGE_NAME}:latest ."
+                
                 }
             }
         }
