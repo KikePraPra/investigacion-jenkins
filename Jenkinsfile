@@ -1,13 +1,34 @@
 pipeline {
     agent any
+
+    environment {
+        IMAGE_NAME = "grocy-app-image"
+        CONTAINER_NAME = "grocy-app"
+    }
+
     stages {
+        stage('Sincronizacion') {
+            steps {
+                cleanWs()
+                checkout scm
+                sh "cat index.html"
+            }
         }
-        stage('Build y Deploy') {
+
+        stage('Build Docker') {
             steps {
                 script {
-                    sh "docker build --no-cache -t grocy-app-image:latest ."
-                    sh "docker rm -f grocy-app || true"
-                    sh "docker run -d --name grocy-app -p 8081:80 grocy-app-image:latest"
+                    // El punto final es vital, indica el contexto actual
+                    sh "docker build --no-cache -t ${IMAGE_NAME}:latest ."
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    sh "docker rm -f ${CONTAINER_NAME} || true"
+                    sh "docker run -d --name ${CONTAINER_NAME} -p 8081:80 ${IMAGE_NAME}:latest"
                 }
             }
         }
