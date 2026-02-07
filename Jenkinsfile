@@ -11,7 +11,6 @@ pipeline {
             steps {
                 cleanWs()
                 checkout scm
-                sh "cat index.html"
             }
         }
 
