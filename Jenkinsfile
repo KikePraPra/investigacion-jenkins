@@ -18,7 +18,8 @@ pipeline {
             steps {
                 script {
                     // El punto final es vital, indica el contexto actual
-                
+
+
                 }
             }
         }
