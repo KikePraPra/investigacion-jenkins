@@ -2,9 +2,10 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "container-v1"
+        IMAGE_NAME = "grocy-app-image"
         CONTAINER_NAME = "grocy-app"
-        PORT = "3000"
+        HOST_PORT = "8080"  // Puerto en tu EC2, puede ser cualquiera
+        CONTAINER_PORT = "80"  // Puerto dentro del contenedor, Nginx default
     }
 
     stages {
@@ -17,7 +18,6 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Construye la imagen
                     sh "docker build -t ${IMAGE_NAME} ."
                 }
             }
@@ -26,13 +26,23 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    // Si existe un contenedor previo, lo detenemos y eliminamos
+                    // Detener y eliminar contenedor previo si existe
                     sh "docker rm -f ${CONTAINER_NAME} || true"
 
-                    // Lanza el contenedor en el puerto especificado
-                    sh "docker run -d --name ${CONTAINER_NAME} -p ${PORT}:${PORT} --restart unless-stopped ${IMAGE_NAME}"
+                    // Levantar contenedor mapeando puerto de host al contenedor
+                    sh "docker run -d --name ${CONTAINER_NAME} -p ${HOST_PORT}:${CONTAINER_PORT} --restart unless-stopped ${IMAGE_NAME}"
                 }
             }
+        }
+    }
+
+    post {
+        success {
+            echo "✅ ¡Aplicación desplegada exitosamente! Accede en http://<IP_de_tu_EC2>:${HOST_PORT}"
+        }
+        failure {
+            sh "docker logs ${CONTAINER_NAME} || true"
+            echo "❌ Hubo un error durante el deploy."
         }
     }
 }
