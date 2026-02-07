@@ -35,9 +35,6 @@ pipeline {
                     // Detener y borrar con fuerza el contenedor anterior
                     sh "docker rm -f ${CONTAINER_NAME} || true"
                     
-                    // Limpiar imágenes huérfanas para no llenar el disco de la EC2
-                    sh "docker image prune -f"
-                    
                     // Lanzar el nuevo contenedor
                     sh "docker run -d -p ${HOST_PORT}:${CONTAINER_PORT} --name ${CONTAINER_NAME} ${IMAGE_NAME}"
                 }
