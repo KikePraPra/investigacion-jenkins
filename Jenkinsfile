@@ -18,8 +18,11 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh "docker build -t ${IMAGE_NAME} ."
-                }
+                // Validamos que estamos en el directorio correcto
+                sh "ls -la" 
+                // Construimos la imagen
+                sh "docker build -t ${IMAGE_NAME} - < Dockerfile"
+            }
             }
         }
 
