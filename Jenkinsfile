@@ -13,18 +13,14 @@ pipeline {
             steps {
                 cleanWs()
                 checkout scm
-                sh 'git log -1 --oneline'
             }
         }
 
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Verificamos en el log de Jenkins si el archivo es el nuevo
-                    sh "cat index.html"
-                    
-                    // --no-cache es vital para que no use el index.html viejo
-                    sh "docker build --no-cache -t ${IMAGE_NAME} ."
+                    // Usamos el archivo en minúscula y sin caché para asegurar archivos nuevos
+                    sh "docker build --no-cache -t ${IMAGE_NAME} -f dockerfile ."
                 }
             }
         }
@@ -32,22 +28,11 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    // Detener y borrar con fuerza el contenedor anterior
+                    // Limpieza total antes de arrancar
                     sh "docker rm -f ${CONTAINER_NAME} || true"
-                    
-                    // Lanzar el nuevo contenedor
-                    sh "docker run -d -p ${HOST_PORT}:${CONTAINER_PORT} --name ${CONTAINER_NAME} ${IMAGE_NAME}"
+                    sh "docker run -d --name ${CONTAINER_NAME} -p ${HOST_PORT}:${CONTAINER_PORT} ${IMAGE_NAME}"
                 }
             }
-        }
-    }
-
-    post {
-        success {
-            echo "✅ Deploy exitoso en http://13.218.25.210:8081"
-        }
-        failure {
-            echo "❌ Falló el pipeline"
         }
     }
 }
