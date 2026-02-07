@@ -1,14 +1,6 @@
 pipeline {
     agent any
     stages {
-        stage('Probando') {
-            steps {
-                script {
-                    sh "echo '--- SI PUEDES LEER ESTO, JENKINS ESTA FUNCIONANDO ---'"
-                    sh "ls -la"
-                    sh "cat index.html"
-                }
-            }
         }
         stage('Build y Deploy') {
             steps {
