@@ -17,7 +17,7 @@ pipeline {
         stage('Build Docker') {
             steps {
                 script {
-                    
+                    sh "docker build --no-cache -t ${IMAGE_NAME}:latest ."  
                 }
             }
         }
